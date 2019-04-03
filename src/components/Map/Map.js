@@ -10,8 +10,9 @@ class Map extends Component {
         super(props);
         this.onScriptLoad = this.onScriptLoad.bind(this)
         this.state = {
-          map:'',
-          markers:[]
+          map:null,
+          markers:[],
+          activeMarker:null
         }
   }
 
@@ -21,6 +22,7 @@ class Map extends Component {
           document.getElementById(this.props.id),
           this.props.options)
       })
+
       this.onMapLoad(this.state.map)
   }
 
@@ -30,55 +32,79 @@ class Map extends Component {
           position: { lat: e.latLng.lat(), lng: e.latLng.lng() }
       })
       infoWindow.addListener('domready', e => {
-          render(<InfoWindow marker = {this.props.data[0]}/>, document.getElementById('infoWindow'))
+          render(<InfoWindow marker = {this.state.activeMarker} data = {this.props.data}/>, document.getElementById('infoWindow'))
       })
       infoWindow.open(map)
   }
 
+  clearMarkers(){
+      let markers = this.state.markers;
+      markers.forEach((marker)=>{
+          marker.setMap(null)
+      })
+      markers = []
+      this.setState({
+        markers
+      })
+  }
 
-    onMapLoad = map => {
-        console.log("the icon went through")
-        this.props.data.forEach(house => {
+  correctZIndex(activeMarker){
+  let markers = this.state.markers;
+  markers.forEach((marker)=>{
+    marker.setZIndex(0)
+  })
+  activeMarker.setZIndex(100)
+  }
 
-            let marker = new window.google.maps.Marker({
-                map:map,
-                position:house.position,
-                name:house.name,
-                id:house.id,
-                icon:{
-                    url: house.icon || icon({text:house.price}),
-                    scaledSize: new window.google.maps.Size(60, 60),
-                    anchor:new window.google.maps.Point(30,30)
-                }
-            })
+  onMapLoad(map){
 
-            marker.addListener('click', e => {
-                this.createInfoWindow(e,map)
-                this.props.clearMarkers();
-                this.onMapLoad(this.state.map)
-                console.log(this.props.markers)
-            })
+      this.clearMarkers()
 
-            marker.addListener('mouseover', e => {
-                marker.setIcon({
-                  url:icon({center:'2ee1ff', text:house.price}),
-                  scaledSize: new window.google.maps.Size(70,70),
-                  anchor: new window.google.maps.Point(35,35)
-                })
-            })
+      this.props.data.forEach(house => {
 
-            marker.addListener('mouseout', e => {
-                marker.setIcon({
-                  url:icon({center:'3cc194', text:house.price}),
-                  scaledSize: new window.google.maps.Size(60,60),
-                  anchor: new window.google.maps.Point(30,30)
-                })
-            })
+          let marker = new window.google.maps.Marker({
+              map:map,
+              position:house.position,
+              name:house.name,
+              id:house.id,
+              icon:{
+                  url: house.icon || icon({text:house.price}),
+                  scaledSize: new window.google.maps.Size(60, 60),
+                  anchor:new window.google.maps.Point(30,30)
+              }
+          })
 
+          this.setState((prevState) => ({
+              markers:[marker, ...prevState.markers]
+          }), ()=>console.log(this.state));
 
-        })
-        console.log("clicked again")
-    }
+          marker.addListener('click', e => {
+              this.setState({
+                  activeMarker:marker
+              })
+              this.createInfoWindow(e,map)
+              this.onMapLoad(this.state.map)
+              console.log(this.props.markers)
+          })
+
+          marker.addListener('mouseover', e => {
+              marker.setIcon({
+                url:icon({center:'2ee1ff', color:'2ee1ff', text:house.price}),
+                scaledSize: new window.google.maps.Size(60,60),
+                anchor: new window.google.maps.Point(30,30)
+              })
+              this.correctZIndex(marker)
+          })
+
+          marker.addListener('mouseout', e => {
+              marker.setIcon({
+                url:icon({center:'3cc194', text:house.price}),
+                scaledSize: new window.google.maps.Size(60,60),
+                anchor: new window.google.maps.Point(30,30)
+              })
+          })
+      })
+  }
 
 
 

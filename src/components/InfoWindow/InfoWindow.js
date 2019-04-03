@@ -18,22 +18,24 @@ const styles = {
 };
 
 function InfoWindow(props) {
-  const { classes } = props;
-  const { marker } = props;
+  const { classes, marker, data } = props;
+  const infoWindowData = data.filter((house)=>{
+    return data.id !== marker.id;
+  })
 
-  console.log(props)
+  console.log(infoWindowData,"info data")
 
   return (
     <div>
       <Card className={classes.card}>
         <CardMedia
           className={classes.media}
-image="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Bosphorus.jpg/397px-Bosphorus.jpg"
+          image={`./images/houses/${marker.id}/main.jpg`}
           title="Contemplative Reptile"
         />
         <CardContent>
           <Typography gutterBottom variant="headline" component="h2">
-            {marker.name}
+            {data[0].price}
           </Typography>
           <Typography component="p">
             Istanbul is a major city in Turkey that straddles Europe and Asia across the Bosphorus Strait. Its Old City reflects cultural influences of the many empires that once ruled here.
