@@ -4,7 +4,8 @@ export default function(){
           id: 1,
           name:"Home",
           address:"3100 Hamilton Ave",
-          position:{lat:32.7547,lng:-97.3614}
+          position:{lat:32.7547,lng:-97.3614},
+          price:'325K'
       }
   ]
 }

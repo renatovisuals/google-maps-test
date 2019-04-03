@@ -45,7 +45,7 @@ image="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Bosphorus.jpg/3
             Share
           </Button>
           <Button size="small" color="primary">
-            Learn More
+            View Listing
           </Button>
         </CardActions>
       </Card>
