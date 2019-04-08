@@ -9,7 +9,7 @@ import Typography from '@material-ui/core/Typography';
 
 const styles = {
   card: {
-    maxWidth: 345
+    maxWidth: 345,
   },
   media: {
     height: 0,
@@ -20,32 +20,29 @@ const styles = {
 function InfoWindow(props) {
   const { classes, marker, data } = props;
   const infoWindowData = data.filter((house)=>{
-    return data.id !== marker.id;
+    return house.id === marker.id;
   })
-
-  console.log(infoWindowData,"info data")
 
   return (
     <div>
-      <Card className={classes.card}>
+      <Card className={classes.card} onMouseOut = {()=>console.log("working")}>
         <CardMedia
           className={classes.media}
           image={`./images/houses/${marker.id}/main.jpg`}
           title="Contemplative Reptile"
         />
         <CardContent>
-          <Typography gutterBottom variant="headline" component="h2">
-            {data[0].price}
+          <Typography variant="headline" component="h2">
+            {`$${infoWindowData[0].price}`}
           </Typography>
           <Typography component="p">
-            Istanbul is a major city in Turkey that straddles Europe and Asia across the Bosphorus Strait. Its Old City reflects cultural influences of the many empires that once ruled here.
-
+            {infoWindowData[0].address}
+          </Typography>
+          <Typography component="p">
+            {`${infoWindowData[0].bedrooms} bd, ${infoWindowData[0].bathrooms} ba, ${infoWindowData[0].sqft} sqft`}
           </Typography>
         </CardContent>
         <CardActions>
-          <Button size="small" color="primary">
-            Share
-          </Button>
           <Button size="small" color="primary">
             View Listing
           </Button>

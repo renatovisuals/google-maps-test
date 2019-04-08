@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import InfoWindow from '.././InfoWindow/InfoWindow';
 import { render } from 'react-dom';
-import { icon } from '../../utils'
+import { icon, abbreviatePrice } from '../../utils'
 import './map.css';
 
 
@@ -12,15 +12,27 @@ class Map extends Component {
         this.state = {
           map:null,
           markers:[],
-          activeMarker:null
+          activeMarker:null,
+          infowWindow:null
         }
   }
 
   onScriptLoad() {
+      let map = new window.google.maps.Map(
+        document.getElementById(this.props.id),
+        this.props.options)
+
+      map.addListener('click',()=>{
+          if(this.state.infoWindow){
+            this.state.infoWindow.close(this.state.map)
+            this.setState({
+                infoWindow:null
+            })
+          }
+      })
+
       this.setState({
-        map: new window.google.maps.Map(
-          document.getElementById(this.props.id),
-          this.props.options)
+        map
       })
 
       this.onMapLoad(this.state.map)
@@ -28,13 +40,22 @@ class Map extends Component {
 
   createInfoWindow(e, map) {
       const infoWindow = new window.google.maps.InfoWindow({
-          content: '<div id="infoWindow"> hello </div>',
-          position: { lat: e.latLng.lat(), lng: e.latLng.lng() }
+          content: '<div id="infoWindow"></div>',
+          position: { lat: e.latLng.lat(), lng: e.latLng.lng() },
+          pixelOffset: new window.google.maps.Size(0,5)
       })
       infoWindow.addListener('domready', e => {
           render(<InfoWindow marker = {this.state.activeMarker} data = {this.props.data}/>, document.getElementById('infoWindow'))
       })
-      infoWindow.open(map)
+      infoWindow.addListener('closeclick', e => {
+          this.setState({
+            infoWindow:null
+          })
+      })
+      this.setState({
+          infoWindow
+      })
+      this.state.infoWindow.open(map)
   }
 
   clearMarkers(){
@@ -61,14 +82,15 @@ class Map extends Component {
       this.clearMarkers()
 
       this.props.data.forEach(house => {
-
+          const shorthandPrice = abbreviatePrice(house.price)
           let marker = new window.google.maps.Marker({
               map:map,
               position:house.position,
               name:house.name,
               id:house.id,
+              cursor:'pointer',
               icon:{
-                  url: house.icon || icon({text:house.price}),
+                  url: house.icon || icon({text:shorthandPrice}),
                   scaledSize: new window.google.maps.Size(60, 60),
                   anchor:new window.google.maps.Point(30,30)
               }
@@ -79,37 +101,38 @@ class Map extends Component {
           }), ()=>console.log(this.state));
 
           marker.addListener('click', e => {
-              this.setState({
-                  activeMarker:marker
-              })
-              this.createInfoWindow(e,map)
               this.onMapLoad(this.state.map)
-              console.log(this.props.markers)
+              if(this.state.infoWindow){
+                  this.state.infoWindow.close()
+                  this.setState({
+                      infoWindow:null
+                  })
+              }
+              this.createInfoWindow(e,map)
           })
 
           marker.addListener('mouseover', e => {
               marker.setIcon({
-                url:icon({center:'2ee1ff', color:'2ee1ff', text:house.price}),
+                url:icon({center:'2ee1ff', color:'2ee1ff', text:shorthandPrice}),
                 scaledSize: new window.google.maps.Size(60,60),
                 anchor: new window.google.maps.Point(30,30)
+              })
+              this.setState({
+                  activeMarker:marker
               })
               this.correctZIndex(marker)
           })
 
           marker.addListener('mouseout', e => {
+              let closeInfoWindowWithTimeout;
               marker.setIcon({
-                url:icon({center:'3cc194', text:house.price}),
+                url:icon({center:'3cc194', text:shorthandPrice}),
                 scaledSize: new window.google.maps.Size(60,60),
                 anchor: new window.google.maps.Point(30,30)
               })
           })
       })
   }
-
-
-
-
-
 
   componentDidMount() {
     if (!window.google) {
@@ -126,10 +149,6 @@ class Map extends Component {
     } else {
         this.onScriptLoad()
     }
-
-
-
-
   }
 
   render() {
