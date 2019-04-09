@@ -16,6 +16,7 @@ export default function(){
           parking:2,
           lotsqft:5488,
           pricepersqfr:107,
+          imageAmount:35,
           description:'Spacious and Open 4 Bedroom 3 Full Bath home in sought after Keller ISD! The downstairs living room is bright and open to the kitchen perfect for family and entertaining. Kitchen offers plenty of cabinets and storage with SS appliances. There is one bedroom down with a full bath, would make great guest suite. Second living and 3 bedrooms upstairs. Large master, room for sitting area, dual sinks and separate shower, with jetted tub. Nice sized back yard with covered patio. Walk to the community pool and playground!'
       },
       {

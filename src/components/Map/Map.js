@@ -4,17 +4,22 @@ import { render } from 'react-dom';
 import { icon, abbreviatePrice } from '../../utils'
 import './map.css';
 
-
 class Map extends Component {
     constructor(props) {
         super(props);
         this.onScriptLoad = this.onScriptLoad.bind(this)
+        this.viewListing = this.viewListing.bind(this)
         this.state = {
           map:null,
           markers:[],
           activeMarker:null,
           infowWindow:null
         }
+  }
+
+  viewListing(){
+      this.props.getListing(this.state.activeMarker)
+      console.log("listing is being viewed")
   }
 
   onScriptLoad() {
@@ -45,7 +50,7 @@ class Map extends Component {
           pixelOffset: new window.google.maps.Size(0,5)
       })
       infoWindow.addListener('domready', e => {
-          render(<InfoWindow marker = {this.state.activeMarker} data = {this.props.data}/>, document.getElementById('infoWindow'))
+          render(<InfoWindow marker = {this.state.activeMarker} data = {this.props.data} viewListing = {this.viewListing}/>, document.getElementById('infoWindow'))
       })
       infoWindow.addListener('closeclick', e => {
           this.setState({

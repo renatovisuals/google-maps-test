@@ -25,7 +25,7 @@ function InfoWindow(props) {
 
   return (
     <div>
-      <Card className={classes.card} onMouseOut = {()=>console.log("working")}>
+      <Card className={classes.card}>
         <CardMedia
           className={classes.media}
           image={`./images/houses/${marker.id}/main.jpg`}
@@ -43,7 +43,7 @@ function InfoWindow(props) {
           </Typography>
         </CardContent>
         <CardActions>
-          <Button size="small" color="primary">
+          <Button size="small" color="primary" onClick = {props.viewListing}>
             View Listing
           </Button>
         </CardActions>
